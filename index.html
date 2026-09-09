@@ -40,10 +40,9 @@
       margin-bottom: 25px;
     }
 
-    /* Layout en Grid para Móviles y PCs normales */
+    /* Layout en Grid para Móviles y PCs */
     .channels-grid {
       display: grid;
-      /* Ajuste dinámico con tamaño mínimo de 160px */
       grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
       gap: 20px;
       max-width: 1400px;
@@ -54,11 +53,13 @@
       display: block;
       aspect-ratio: 1 / 1;
       background-color: #121212;
-      background-size: cover;
+      /* CORRECCIÓN PRINCIPAL: contain para adaptar toda la imagen dentro del icono */
+      background-size: contain; 
       background-repeat: no-repeat;
       background-position: center;
       border: 3px solid #333333;
       border-radius: 20px;
+      padding: 10px; /* Margen interno para que no pegue a los bordes */
       transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
       cursor: pointer;
     }
@@ -144,15 +145,19 @@
       border-radius: 12px;
       overflow: hidden;
       border: 1px solid #333;
+      background-color: #000;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 10px;
     }
 
     .nieta img {
-      width: 100%;
+      max-width: 100%;
       height: auto;
       max-height: 220px;
-      object-fit: contain;
+      object-fit: contain; /* Adaptación para la imagen dentro del modal */
       display: block;
-      background: #000;
     }
 
     .nieto {
@@ -195,7 +200,7 @@
     }
 
     /* ---------------------------------------------------
-       AJUSTES ESPECÍFICOS PARA PANTALLAS GRANDES / TV 
+       AJUSTES ESPECÍFICOS PARA TV / PANTALLAS GRANDES
     --------------------------------------------------- */
     @media screen and (min-width: 1200px) {
       body {
@@ -207,7 +212,6 @@
       }
 
       .channels-grid {
-        /* Iconos más grandes: Mínimo 220px por icono */
         grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
         gap: 30px;
         max-width: 1600px;
@@ -216,9 +220,9 @@
       .logo {
         border-width: 4px;
         border-radius: 24px;
+        padding: 15px; /* Más margen interno para Smart TV */
       }
 
-      /* Modales escalados para TV */
       .modalbox {
         max-width: 600px;
         padding: 35px;
