@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Canales Cine</title>
+  <style>
+    /* Reset & Base */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #0b0b0b;
+      color: #ffffff;
+      padding: 20px;
+    }
+
+    /* Cabecera */
+    .header-container {
+      text-align: center;
+      margin-bottom: 25px;
+    }
+
+    .img-titulo {
+      max-width: 320px;
+      width: 100%;
+      height: auto;
+      display: block;
+      margin: 0 auto 15px auto;
+    }
+
+    .divider {
+      border: 0;
+      height: 2px;
+      background: #333333;
+      margin-bottom: 25px;
+    }
+
+    /* Layout en Grid para Móviles y PCs normales */
+    .channels-grid {
+      display: grid;
+      /* Ajuste dinámico con tamaño mínimo de 160px */
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 20px;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .logo {
+      display: block;
+      aspect-ratio: 1 / 1;
+      background-color: #121212;
+      background-size: cover;
+      background-repeat: no-repeat;
+      background-position: center;
+      border: 3px solid #333333;
+      border-radius: 20px;
+      transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+      cursor: pointer;
+    }
+
+    .logo:hover, .logo:focus {
+      transform: scale(1.06);
+      border-color: #007bff;
+      box-shadow: 0 0 20px rgba(0, 123, 255, 0.5);
+      outline: none;
+    }
+
+    /* Modales */
+    .modalmask {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.88);
+      z-index: 99999;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .modalmask:target {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modalbox {
+      background: #181818;
+      border: 3px solid #444444;
+      border-radius: 20px;
+      width: 100%;
+      max-width: 480px;
+      padding: 25px;
+      position: relative;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.9);
+      transform: scale(0.85);
+      transition: transform 0.3s ease;
+    }
+
+    .modalmask:target .modalbox {
+      transform: scale(1);
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .modal-header h2 {
+      font-size: 22px;
+      color: #ffffff;
+      font-weight: bold;
+    }
+
+    .btn-cerrar {
+      text-decoration: none;
+      width: 36px;
+      height: 36px;
+      line-height: 32px;
+      text-align: center;
+      font-weight: bold;
+      font-size: 18px;
+      color: #ffffff;
+      background-color: #2a2a2a;
+      border-radius: 50%;
+      transition: background 0.2s ease;
+    }
+
+    .btn-cerrar:hover, .btn-cerrar:focus {
+      background-color: #ff3b30;
+      outline: none;
+    }
+
+    .nieta {
+      margin-bottom: 20px;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid #333;
+    }
+
+    .nieta img {
+      width: 100%;
+      height: auto;
+      max-height: 220px;
+      object-fit: contain;
+      display: block;
+      background: #000;
+    }
+
+    .nieto {
+      background-color: #242424;
+      border-radius: 12px;
+      padding: 20px;
+      text-align: center;
+    }
+
+    .servidores {
+      height: 35px;
+      width: auto;
+      margin-bottom: 15px;
+    }
+
+    .options-container {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+
+    .opciones {
+      width: 90px;
+      height: 50px;
+      background-color: #000000;
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-position: center;
+      border: 2px solid #555555;
+      border-radius: 8px;
+      display: inline-block;
+      transition: transform 0.2s ease, border-color 0.2s ease;
+    }
+
+    .opciones:hover, .opciones:focus {
+      transform: scale(1.08);
+      border-color: #007bff;
+      outline: none;
+    }
+
+    /* ---------------------------------------------------
+       AJUSTES ESPECÍFICOS PARA PANTALLAS GRANDES / TV 
+    --------------------------------------------------- */
+    @media screen and (min-width: 1200px) {
+      body {
+        padding: 40px;
+      }
+
+      .img-titulo {
+        max-width: 450px;
+      }
+
+      .channels-grid {
+        /* Iconos más grandes: Mínimo 220px por icono */
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 30px;
+        max-width: 1600px;
+      }
+
+      .logo {
+        border-width: 4px;
+        border-radius: 24px;
+      }
+
+      /* Modales escalados para TV */
+      .modalbox {
+        max-width: 600px;
+        padding: 35px;
+        border-width: 4px;
+      }
+
+      .modal-header h2 {
+        font-size: 28px;
+      }
+
+      .btn-cerrar {
+        width: 46px;
+        height: 46px;
+        line-height: 42px;
+        font-size: 22px;
+      }
+
+      .nieta img {
+        max-height: 300px;
+      }
+
+      .servidores {
+        height: 45px;
+      }
+
+      .opciones {
+        width: 120px;
+        height: 65px;
+      }
+    }
+
+    /* Imágenes de fondo para canales */
+    .canal_1 { background-image: url("https://raw.githubusercontent.com/Sherpa47/Imagenes/main/Canales%20Cine/Clasicos.png"); }
+    .canal_2 { background-image: url("https://raw.githubusercontent.com/Sherpa47/Imagenes/main/Canales%20Cine/Accion.png"); }
+    .canal_3 { background-image: url("https://raw.githubusercontent.com/Sherpa47/Imagenes/main/Canales%20Cine/Comedia.png"); }
+    .canal_4 { background-image: url("https://raw.githubusercontent.com/Sherpa47/Imagenes/main/Canales%20Cine/Drama.png"); }
+    .canal_5 { background-image: url("https://raw.githubusercontent.com/Sherpa47/Imagenes/main/Canales%20Cine/Cine.png"); }
+    .canal_6 { background-image: url("https://raw.githubusercontent.com/Sherpa47/Imagenes/main/Canales%20Cine/Cineñ.png"); }
+    .canal_8 { background-image: url("https://raw.githubusercontent.com/Sherpa47/Imagenes/main/Canales%20Cine/Amc.png"); }
+    .canal_9 { background-image: url("https://raw.githubusercontent.com/Sherpa47/Imagenes/main/Canales%20Cine/Paramount.png"); }
+    .canal_10 { background-image: url("https://raw.githubusercontent.com/Sherpa47/Imagenes/main/Canales%20Cine/Dark.png"); }
+    .canal_11 { background-image: url("https://raw.githubusercontent.com/Sherpa47/Imagenes/main/Canales%20Cine/Hollywood.png"); }
+    .canal_12 { background-image: url("https://raw.githubusercontent.com/Sherpa47/Imagenes/main/Canales%20Cine/Tcm.png"); }
+
+    /* Imágenes de opciones */
+    .opcion1 { background-image: url("https://raw.githubusercontent.com/Sherpa47/Imagenes/main/Cabeceras/Opcion-1.png"); }
+    .opcion2 { background-image: url("https://raw.githubusercontent.com/Sherpa47/Imagenes/main/Cabeceras/Opcion-2.png"); }
+    .opcion3 { background-image: url("https://raw.githubusercontent.com/Sherpa47/Imagenes/main/Cabeceras/Opcion-3.png"); }
+    .opcion4 { background-image: url("https://raw.githubusercontent.com/Sherpa47/Imagenes/main/Cabeceras/Opcion-4.png"); }
+  </style>
+</head>
+<body>
+
+  <div class="header-container">
+    <img src="https://raw.githubusercontent.com/Sherpa47/Imagenes/main/Cabeceras/Cine.png" alt="Cine" class="img-titulo" />
+    <hr class="divider" />
+  </div>
+
+  <main class="channels-grid">
+    
+    <!-- M+ CLASICOS -->
+    <a class="logo canal_1" href="#demo1" aria-label="M+ Clásicos"></a>
+    <div class="modalmask" id="demo1">
+      <div class="modalbox">
+        <div class="modal-header">
+          <h2>M+ CLÁSICOS</h2>
+          <a class="btn-cerrar" href="#">&times;</a>
+        </div>
+        <div class="nieta">
+          <img src="https://raw.githubusercontent.com/Sherpa47/Imagenes/main/Canales%20Cine/Clasicos.png" alt="M+ Clásicos" />
+        </div>
+        <div class="nieto">
+          <img src="https://raw.githubusercontent.com/Sherpa47/Imagenes/main/Cabeceras/Servidor.png" alt="Servidor" class="servidores" />
+          <div class="options-container">
+            <a rel="nofollow" class="opciones opcion1" href="https://army-team.foroactivo.com/h170-m_clasicos-opc1"></a>
+            <a rel="nofollow" class="opciones opcion2" href="https://army-team.foroactivo.com/h171-m_clasicos-opc2"></a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- M+ ACCION -->
+    <a class="logo canal_2" href="#demo2" aria-label="M+ Acción"></a>
+    <div class="modalmask" id="demo2">
+      <div class="modalbox">
+        <div class="modal-header">
+          <h2>M+ ACCIÓN</h2>
+          <a class="btn-cerrar" href="#">&times;</a>
+        </div>
+        <div class="nieta">
+          <img src="https://raw.githubusercontent.com/Sherpa47/Imagenes/main/Canales%20Cine/Accion.png" alt="M+ Acción" />
+        </div>
+        <div class="nieto">
+          <img src="https://raw.githubusercontent.com/Sherpa47/Imagenes/main/Cabeceras/Servidor.png" alt="Servidor" class="servidores" />
+          <div class="options-container">
+            <a rel="nofollow" class="opciones opcion1" href="https://army-team.foroactivo.com/h172-m_accion-opc1"></a>
+            <a rel="nofollow" class="opciones opcion2" href="https://army-team.foroactivo.com/h173-m_accion-opc2"></a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- M+ COMEDIA -->
+    <a class="logo canal_3" href="#demo3" aria-label="M+ Comedia"></a>
+    <div class="modalmask" id="demo3">
+      <div class="modalbox">
+        <div class="modal-header">
+          <h2>M+ COMEDIA</h2>
+          <a class="btn-cerrar" href="#">&times;</a>
+        </div>
+        <div class="nieta">
+          <img src="https://raw.githubusercontent.com/Sherpa47/Imagenes/main/Canales%20Cine/Comedia.png" alt="M+ Comedia" />
+        </div>
+        <div class="nieto">
+          <img src="https://raw.githubusercontent.com/Sherpa47/Imagenes/main/Cabeceras/Servidor.png" alt="Servidor" class="servidores" />
+          <div class="options-container">
+            <a rel="nofollow" class="opciones opcion1" href="https://army-team.foroactivo.com/h174-m_comedia-opc1"></a>
+            <a rel="nofollow" class="opciones opcion2" href="https://army-team.foroactivo.com/h175-m_comedia-opc2"></a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- M+ DRAMA -->
+    <a class="logo canal_4" href="#demo4" aria-label="M+ Drama"></a>
+    <div class="modalmask" id="demo4">
+      <div class="modalbox">
+        <div class="modal-header">
+          <h2>M+ DRAMA</h2>
+          <a class="btn-cerrar" href="#">&times;</a>
+        </div>
+        <div class="nieta">
+          <img src="https://raw.githubusercontent.com/Sherpa47/Imagenes/main/Canales%20Cine/Drama.png" alt="M+ Drama" />
+        </div>
+        <div class="nieto">
+          <img src="https://raw.githubusercontent.com/Sherpa47/Imagenes/main/Cabeceras/Servidor.png" alt="Servidor" class="servidores" />
+          <div class="options-container">
+            <a rel="nofollow" class="opciones opcion1" href="https://army-team.foroactivo.com/h176-m_drama-opc1"></a>
+            <a rel="nofollow" class="opciones opcion2" href="https://army-team.foroactivo.com/h177-m_drama-opc2"></a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- M+ CINE -->
+    <a class="logo canal_5" href="#demo5" aria-label="M+ Cine"></a>
+    <div class="modalmask" id="demo5">
+      <div class="modalbox">
+        <div class="modal-header">
+          <h2>M+ CINE</h2>
+          <a class="btn-cerrar" href="#">&times;</a>
+        </div>
+        <div class="nieta">
+          <img src="https://raw.githubusercontent.com/Sherpa47/Imagenes/main/Canales%20Cine/Cine.png" alt="M+ Cine" />
+        </div>
+        <div class="nieto">
+          <img src="https://raw.githubusercontent.com/Sherpa47/Imagenes/main/Cabeceras/Servidor.png" alt="Servidor" class="servidores" />
+          <div class="options-container">
+            <a rel="nofollow" class="opciones opcion1" href="https://army-team.foroactivo.com/h178-m_cine-opc1"></a>
+            <a rel="nofollow" class="opciones opcion2" href="https://army-team.foroactivo.com/h179-m_cine-opc2"></a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- M+ CINE Ñ -->
+    <a class="logo canal_6" href="#demo6" aria-label="M+ Cine Ñ"></a>
+    <div class="modalmask" id="demo6">
+      <div class="modalbox">
+        <div class="modal-header">
+          <h2>M+ CINE Ñ</h2>
+          <a class="btn-cerrar" href="#">&times;</a>
+        </div>
+        <div class="nieta">
+          <img src="https://raw.githubusercontent.com/Sherpa47/Imagenes/main/Canales%20Cine/Cineñ.png" alt="M+ Cine Ñ" />
+        </div>
+        <div class="nieto">
+          <img src="https://raw.githubusercontent.com/Sherpa47/Imagenes/main/Cabeceras/Servidor.png" alt="Servidor" class="servidores" />
+          <div class="options-container">
+            <a rel="nofollow" class="opciones opcion1" href="https://army-team.foroactivo.com/h180-m_cine_n-opc1"></a>
+            <a rel="nofollow" class="opciones opcion2" href="https://army-team.foroactivo.com/h181-m_cine_n-opc2"></a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- AMC -->
+    <a class="logo canal_8" href="#demo8" aria-label="AMC"></a>
+    <div class="modalmask" id="demo8">
+      <div class="modalbox">
+        <div class="modal-header">
+          <h2>AMC</h2>
+          <a class="btn-cerrar" href="#">&times;</a>
+        </div>
+        <div class="nieta">
+          <img src="https://raw.githubusercontent.com/Sherpa47/Imagenes/main/Canales%20Cine/Amc.png" alt="AMC" />
+        </div>
+        <div class="nieto">
+          <img src="https://raw.githubusercontent.com/Sherpa47/Imagenes/main/Cabeceras/Servidor.png" alt="Servidor" class="servidores" />
+          <div class="options-container">
+            <a rel="nofollow" class="opciones opcion1" href="https://army-team.foroactivo.com/h182-amc-opc1"></a>
+            <a rel="nofollow" class="opciones opcion2" href="https://army-team.foroactivo.com/h183-amc-opc2"></a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PARAMOUNT NETWORK -->
+    <a class="logo canal_9" href="#demo9" aria-label="Paramount Network"></a>
+    <div class="modalmask" id="demo9">
+      <div class="modalbox">
+        <div class="modal-header">
+          <h2>PARAMOUNT NETWORK</h2>
+          <a class="btn-cerrar" href="#">&times;</a>
+        </div>
+        <div class="nieta">
+          <img src="https://raw.githubusercontent.com/Sherpa47/Imagenes/main/Canales%20Cine/Paramount.png" alt="Paramount Network" />
+        </div>
+        <div class="nieto">
+          <img src="https://raw.githubusercontent.com/Sherpa47/Imagenes/main/Cabeceras/Servidor.png" alt="Servidor" class="servidores" />
+          <div class="options-container">
+            <a rel="nofollow" class="opciones opcion1" href="https://army-team.foroactivo.com/h184-paramount_channel-opc1"></a>
+            <a rel="nofollow" class="opciones opcion2" href="https://army-team.foroactivo.com/h185-paramount_channel-opc2"></a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DARK -->
+    <a class="logo canal_10" href="#demo10" aria-label="Dark"></a>
+    <div class="modalmask" id="demo10">
+      <div class="modalbox">
+        <div class="modal-header">
+          <h2>DARK</h2>
+          <a class="btn-cerrar" href="#">&times;</a>
+        </div>
+        <div class="nieta">
+          <img src="https://raw.githubusercontent.com/Sherpa47/Imagenes/main/Canales%20Cine/Dark.png" alt="Dark" />
+        </div>
+        <div class="nieto">
+          <img src="https://raw.githubusercontent.com/Sherpa47/Imagenes/main/Cabeceras/Servidor.png" alt="Servidor" class="servidores" />
+          <div class="options-container">
+            <a rel="nofollow" class="opciones opcion1" href="https://army-team.foroactivo.com/h186-dark-opc1"></a>
+            <a rel="nofollow" class="opciones opcion2" href="https://army-team.foroactivo.com/h187-dark-opc2"></a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CANAL HOLLYWOOD -->
+    <a class="logo canal_11" href="#demo11" aria-label="Canal Hollywood"></a>
+    <div class="modalmask" id="demo11">
+      <div class="modalbox">
+        <div class="modal-header">
+          <h2>CANAL HOLLYWOOD</h2>
+          <a class="btn-cerrar" href="#">&times;</a>
+        </div>
+        <div class="nieta">
+          <img src="https://raw.githubusercontent.com/Sherpa47/Imagenes/main/Canales%20Cine/Hollywood.png" alt="Canal Hollywood" />
+        </div>
+        <div class="nieto">
+          <img src="https://raw.githubusercontent.com/Sherpa47/Imagenes/main/Cabeceras/Servidor.png" alt="Servidor" class="servidores" />
+          <div class="options-container">
+            <a rel="nofollow" class="opciones opcion1" href="https://army-team.foroactivo.com/h188-hollywood-opc1"></a>
+            <a rel="nofollow" class="opciones opcion2" href="https://army-team.foroactivo.com/h189-hollywood-opc2"></a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TCM -->
+    <a class="logo canal_12" href="#demo12" aria-label="TCM"></a>
+    <div class="modalmask" id="demo12">
+      <div class="modalbox">
+        <div class="modal-header">
+          <h2>TCM</h2>
+          <a class="btn-cerrar" href="#">&times;</a>
+        </div>
+        <div class="nieta">
+          <img src="https://raw.githubusercontent.com/Sherpa47/Imagenes/main/Canales%20Cine/Tcm.png" alt="TCM" />
+        </div>
+        <div class="nieto">
+          <img src="https://raw.githubusercontent.com/Sherpa47/Imagenes/main/Cabeceras/Servidor.png" alt="Servidor" class="servidores" />
+          <div class="options-container">
+            <a rel="nofollow" class="opciones opcion1" href="https://army-team.foroactivo.com/h190-tcm-opc1"></a>
+            <a rel="nofollow" class="opciones opcion2" href="https://army-team.foroactivo.com/h191-tcm-opc2"></a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+</body>
+</html>
